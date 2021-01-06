@@ -63,13 +63,9 @@ public class LightMap {
             return ret;
     }
     public void draw(Graphics g, int xx, int yy){
-        long t0 = System.currentTimeMillis();
-        //soften();
-        System.out.println("soften time: "+Long.toString(System.currentTimeMillis()-t0));
+        soften();
         BufferedImage bi = getImage();
-        long t1 = System.currentTimeMillis();
         g.drawImage(bi, xx, yy, null);
-        System.out.println("Draw time: "+Long.toString(System.currentTimeMillis()-t1));
     }
     private int getAlpha(int i, int j,int[][] a){
         if(i<0||i>=a.length||j<0||j>=a[0].length)return -1;
@@ -192,37 +188,9 @@ public class LightMap {
             }
         }
     }
-    private void lighten_point(int x, int y, int val){
+    private void lighten(int x, int y, int val){
         if(x>=0&&x<alphas.length&&y>=0&&y<alphas[0].length){
             alphas[x][y]=Math.max(alphas[x][y]-val, 0);
-        }
-    }
-    public void lighten(int x, int y, int val,int depth){
-        if (depth>DIFFUSAL_RADIUS){
-            return;
-        }
-        for(int i = -1; i<=1; i++){
-            for (int j = -1; j<=1; j++){
-                int manhattan_dist = Math.abs(i)+Math.abs(j);
-                if (manhattan_dist==0){
-                    lighten_point(x, y, val);
-                }else{
-                    lighten(x+i, y+j, (int)(val/DIFFUSAL_RATE),depth+1);
-                }
-            }
-        }
-
-    }
-    public void lighten(int x, int y, int val){
-        for(int i = -1; i<=1; i++){
-            for (int j = -1; j<=1; j++){
-                int manhattan_dist = Math.abs(i)+Math.abs(j);
-                if (manhattan_dist==0){
-                    lighten_point(x, y, val);
-                }else{
-                    lighten(x+i, y+j, (int)(val/DIFFUSAL_RATE),1);
-                }
-            }
         }
     }
     public void circle_light(int cx, int cy, int strength){
