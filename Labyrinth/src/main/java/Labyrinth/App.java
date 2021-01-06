@@ -25,12 +25,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.awt.GridLayout;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.awt.image.BufferedImage;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
+import java.awt.Image;
 public class App implements MouseInputListener, KeyListener {
     public static final String GAMEKEY_URL = "http://127.0.0.1:5000/gamekey";
     public static final String UPDATE_URL = "http://127.0.0.1:5000/refresh";
@@ -106,14 +106,32 @@ public class App implements MouseInputListener, KeyListener {
         }
         return ret;
     }   
+    /**
+ * Converts a given Image into a BufferedImage
+ *
+ * @param img The Image to be converted
+ * @return The converted BufferedImage
+ */
+public static BufferedImage toBufferedImage(Image img)
+{
+    if (img instanceof BufferedImage)
+    {
+        return (BufferedImage) img;
+    }
+
+    // Create a buffered image with transparency
+    BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+    // Draw the image on to the buffered image
+    Graphics2D bGr = bimage.createGraphics();
+    bGr.drawImage(img, 0, 0, null);
+    bGr.dispose();
+
+    // Return the buffered image
+    return bimage;
+}
     private BufferedImage scale(BufferedImage before, int w2,int h2) {
-        int w = before.getWidth();
-        int h = before.getHeight();
-        BufferedImage after = new BufferedImage(w2, h2, before.getType());
-        AffineTransform scaleInstance = AffineTransform.getScaleInstance((double)w2/(double)w, (double)h2/(double)h);
-        AffineTransformOp scaleOp = new AffineTransformOp(scaleInstance, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-        scaleOp.filter(before, after);
-        return after;
+        return toBufferedImage(before.getScaledInstance(w2, h2, BufferedImage.SCALE_SMOOTH));
     }
     private void addObjects() throws IOException {
         sprites = new HashMap<>();

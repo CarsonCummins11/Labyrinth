@@ -24,6 +24,7 @@ public class Surface extends JPanel {
     @Override
     public void paintComponent(Graphics g){
         super.paintComponent(g);
+        long p = System.currentTimeMillis();
         BufferedImage full_room = new BufferedImage((int)room_dim.getWidth(),(int)room_dim.getHeight(),BufferedImage.TYPE_INT_ARGB);
         Graphics g_full = full_room.getGraphics();
         //darken room
@@ -39,9 +40,11 @@ public class Surface extends JPanel {
         view.setSize(getWidth(), getHeight());
         int lag_comp = 15;
         //draw the light map
-        m_temp.getExtendedSection(view,lag_comp).draw(g_full,Math.max(0,view.x-lag_comp/2),Math.max(0,view.y-lag_comp/2));
+        LightMap mep = m_temp.getExtendedSection(view,lag_comp);
+        mep.draw(g_full,Math.max(0,view.x-lag_comp/2),Math.max(0,view.y-lag_comp/2));
         m = m_temp;
         g.drawImage(full_room.getSubimage(view.x,view.y,view.width,view.height),0,0,null);
-
+        g.setColor(Color.white);
+        g.drawString("FPS: "+Long.toString(1000/(System.currentTimeMillis()-p)),50,50);
     }
 }
